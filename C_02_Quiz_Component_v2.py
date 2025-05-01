@@ -45,11 +45,11 @@ def get_movie_options():
             movie_scores.append(int(potential_movies[2]))
 
     # get median score / target score
-    # movie_scores.sort()
-    # median = (movie_scores[1] + movie_scores[2]) / 2
-    # median = round_ans(median)
+    movie_scores.sort()
+    median = (movie_scores[1] + movie_scores[2]) / 2
+    median = round_ans(median)
 
-    return movie_questions # , median
+    return movie_questions, median
 
 
 def round_ans(val):
@@ -77,10 +77,11 @@ class StartGame:
 
         self.start_frame = Frame(padx=10, pady=10)
         self.start_frame.grid()
+        self.start_frame.configure(bg="#EDE8D0")
 
         # Create play button...
         self.play_button = Button(self.start_frame, font=("Arial", "16", "bold"),
-                                  fg="#FFFFFF", bg="#005708", text="Play", width=10,
+                                  fg="#333333", bg="#D0CEE2", text="Play", width=10,
                                   command=self.check_questions)
         self.play_button.grid(row=0, column=1)
 
@@ -103,7 +104,7 @@ class Play:
     def __init__(self, how_many):
 
         # Integers / String Variables
-        # self.target_score = IntVar()
+        self.target_score = IntVar()
 
         # rounds played - start with zero
         self.questions_played = IntVar()
@@ -121,6 +122,7 @@ class Play:
 
         self.quiz_frame = Frame(self.play_box)
         self.quiz_frame.grid(padx=10, pady=10)
+        self.quiz_frame.configure(bg="#EDE8D0")
 
         # body font for most labels...
         body_font = ("Arial", "12")
@@ -128,37 +130,35 @@ class Play:
         # List for label details (text | font| background | row)
         play_labels_list = [
             ["Question # of #", ("Arial", "16", "bold"), None, 0],
-            ["Quote", body_font, None, 1],
-            ["Score to beat:", body_font, "#FFF2CC", 2],
-            ["Choose a movie below. Good Luck.", body_font, "#D5E8D4", 3],
+            ["Movie Quote", body_font, None, 1],
+
+            ["Choose a movie below. Good Luck.", body_font, "#F0F0F0", 2],
             ["You chose, result", body_font, "#D5E8D4", 4]
         ]
 
         play_labels_ref = []
         for item in play_labels_list:
             self.make_label = Label(self.quiz_frame, text=item[0], font=item[1],
-                                    bg=item[2], wraplength=300, justify="left")
+                                    bg="#EDE8D0", wraplength=300, justify="left")
             self.make_label.grid(row=item[3], pady=10, padx=10)
 
             play_labels_ref.append(self.make_label)
 
         # Retrieve Labels so they can be configured later
         self.heading_label = play_labels_ref[0]
-        self.quote_label = play_labels_ref[1]  
-        # self.target_label = play_labels_ref[2]
-        self.results_label = play_labels_ref[4]
+        self.quote_label = play_labels_ref[1]
+        self.results_label = play_labels_ref[3]
 
         # set up buttons..
         self.movie_frame = Frame(self.quiz_frame)
         self.movie_frame.grid(row=3)
 
         self.movie_button_ref = []
-        self.movie_button_list = []
 
         # create four button in a 2 x2 grid
         for item in range(0, 4):
             self.movie_button = Button(self.movie_frame, font=("Arial", "12"),
-                                       text="Movie Name", width=15, wraplength=150,
+                                       text="Movie Name", width=15, bg="#FDFFD6", wraplength=150,
                                        command=partial(self.round_results, item))
             self.movie_button.grid(row=item // 2,
                                    column=item % 2,
@@ -171,9 +171,9 @@ class Play:
 
         # List for buttons (frame | text | bg| command | width | row | column)
         control_button_list = [
-            [self.quiz_frame, "Next Question", "#0057D8", self.new_question, 21, 5, None],
+            [self.quiz_frame, "Next Question", "#D0CEE2", self.new_question, 21, 5, None],
             [self.hints_stats_frame, "Hints", "#FF8000", "", 10, 0, 0],
-            [self.hints_stats_frame, "Stats ", "#333333", "", 10, 0, 1],
+            [self.hints_stats_frame, "Stats ", "#6A6868", "", 10, 0, 1],
             [self.quiz_frame, "End", "#990000", self.close_play, 21, 7, None],
         ]
 
@@ -199,7 +199,7 @@ class Play:
     def new_question(self):
         """
         Choose four movies, works our median for score to beat. Confiqures
-        buttons with chosen movie
+        buttons with chosen movies
         """
 
         # retrieve number of rounds played, add one to it and configure heading
@@ -213,21 +213,23 @@ class Play:
         self.question_quotes_list, median = get_movie_options()
 
         # set target as median (for later comparison)
-        # self.target_score.set(median)
+        self.target_score.set(median)
 
-        # Set the quote above the buttons
-        self.quote_label.config(text=self.question_quotes_list[0][0])
+        # randomly choose a movie from the 4 to display its quote
+        quote_movie = random.choice(self.question_quotes_list)
+        self.quote_label.config(text=quote_movie[0], bg="#D5E8D4", font=("Arial", "14", "bold"))
+        self.correct_movie = quote_movie[1]
+        self.correct_score = int(quote_movie[2])
 
-        # Update heading, and score to beat labels. "hide" results label
-        self.heading_label.config(text=f"Round {rounds_played} of {rounds_wanted}")
-        # self.target_label.config(text=f"Target score: {median}", font=("Arial", "14", "bold"))
-        self.results_label.config(text=f"{'=' * 7}", bg="#F0F0F0")
+        # shuffle the 4 movie names and set them as button text
+        movie_names = [movie[1] for movie in self.question_quotes_list]
+        random.shuffle(movie_names)
 
-        # configure buttons using foreground and background movie from list
-        # enable movie buttons (disabled at the end of hte last round)
         for count, button in enumerate(self.movie_button_ref):
-            movie_name = self.question_quotes_list[count][1]  # Get movie title
-            button.config(text=movie_name, state=NORMAL, pady=10, padx=10)
+            button.config(text=movie_names[count], state=NORMAL, pady=10, padx=10)
+
+        self.heading_label.config(text=f"Round {rounds_played} of {rounds_wanted}")
+        self.results_label.config(text=f"{'=' * 7}", bg="#EDE8D0")
 
         self.next_button.config(state=DISABLED)
 
@@ -238,22 +240,28 @@ class Play:
         and adds results to stats list.
         """
 
-        # Get user score and movie quote in button press...
+        # Get user score and movie bases in button press...
         score = int(self.question_quotes_list[user_choice][2])
 
         # alternate way to get button name. Good for it buttons have been scrambled
         movie_name = self.movie_button_ref[user_choice].cget('text')
 
         # retrieve target score and compare with user score to find round result
-        # target = self.target_score.get()
-        # self.all_medians_list.append(target)
+        target = self.target_score.get()
+        self.all_medians_list.append(target)
 
-        if movie_name >= score:
-            result_text = f"Success! {movie_name} was correct,+{score} points"
-            result_bg = "#828366"
-            self.all_scores_list.append(score)
+        # Check if the selected movie matches the correct one
+        if movie_name == self.correct_movie:
+            if self.correct_score >= target:
+                result_text = f"Success! {movie_name} earned you {self.correct_score} points"
+                result_bg = "#D5E8D4"
+                self.all_scores_list.append(self.correct_score)
+            else:
+                result_text = f"Oops, correct movie was {self.correct_movie}."
+                result_bg = "#F8CECC"
+                self.all_scores_list.append(0)
         else:
-            result_text = f"Oops {movie_name} was incorrect ({score}) is less than the target."
+            result_text = f"Oops, wrong movie! The correct answer was {self.correct_movie}."
             result_bg = "#F8CECC"
             self.all_scores_list.append(0)
 
@@ -287,3 +295,4 @@ if __name__ == "__main__":
     root.title("Movie Quote Quiz")
     StartGame()
     root.mainloop()
+
