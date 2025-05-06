@@ -53,13 +53,13 @@ class Play:
         self.game_frame = Frame(self.play_box)
         self.game_frame.grid(padx=10, pady=10)
 
-        self.heading_label = Label(self.game_frame, text="Colour Quest", font=("Arial", "16", "bold"),
+        self.heading_label = Label(self.game_frame, text="Movie Quotes", font=("Arial", "16", "bold"),
                                    padx=5, pady=5)
         self.heading_label.grid(row=0)
 
         self.hints_button = Button(self.game_frame, font=("Arial", "14", "bold"),
-                                   text="Hints", width=15, fg="#FFFFFF",
-                                   bg="#FF8000", padx=10, pady=10, command=self.to_hints)
+                                   text="Hints", width=15, fg="#333333",
+                                   bg="#FFF2CC", padx=10, pady=10, command=self.to_hints)
         self.hints_button.grid(row=1)
 
     def to_hints(self):
@@ -76,7 +76,7 @@ class DisplayHints:
     """
     def __init__(self, partner):
         # set dialogue box and background colour
-        background = "#ffe6cc"
+        background = "#FFF2CC"
         self.hint_box = Toplevel()
 
         # disable hint button
@@ -93,27 +93,27 @@ class DisplayHints:
 
         self.hint_heading_label = Label(self.hint_frame,
                                         text="Hints",
-                                        font=("Arial", "14", "bold"))
+                                        font=("Arial", "24", "bold"))
         self.hint_heading_label.grid(row=0)
 
-        hint_text = "The score for each colour relates to it's hexadecimal code.\n\n" \
-                    "Remember, the hex code for the white is #FFFFFF - which is teh best " \
-                    "possible score.\n\n" \
-                    "The hex code for black is #000000 which is the worst possible score.\n\n" \
-                    "The first score in the code is red, so if you had to choose" \
-                    "between red (#FF0000), green (#00FF00) and blue (#0000FF), then" \
-                    "red would be the best choice.\n\n" \
+        hint_text = "This quiz will show a quote and four " \
+                    "movies. Your goal is to choose the correct " \
+                    "movie the quote is from and collect points " \
+                    "on the way.\n\n" \
+                    "You expect to see movies with various " \
+                    "genres like comedy, romance, horror etc.\n\n " \
+                    "Make sure you choose the right movie\n\n" \
                     "Good luck!" \
 
         self.hint_text_label = Label(self.hint_frame,
-                                     text=hint_text, wraplength=350,
+                                     text=hint_text, wraplength=300,
                                      justify="left")
         self.hint_text_label.grid(row=1, padx=10)
 
         self.dismiss_button = Button(self.hint_frame,
-                                     font=("Arial", "12", "bold"),
-                                     text="Dismiss", bg="#CC6600",
-                                     fg="#FFFFFF",
+                                     font=("Arial", "18", "bold"),
+                                     text="Close", bg="#FEDC85",
+                                     fg="#333333",
                                      command=partial(self.close_hint, partner))
         self.dismiss_button.grid(row=2, padx=10, pady=10)
 
@@ -139,6 +139,6 @@ class DisplayHints:
 # main routine
 if __name__ == "__main__":
     root = Tk()
-    root.title("Colour quest")
+    root.title("Movie Quotes")
     StartGame()
     root.mainloop()
