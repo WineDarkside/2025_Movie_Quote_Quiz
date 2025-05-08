@@ -111,7 +111,7 @@ class DisplayStats:
         # disable stats button
         partner.stats_button.config(state=DISABLED)
 
-        # if users press cross at top, closes stats and
+        # if users press the cross at the top, closes stats and
         # 'releases' stats button
         self.stats_box.protocol('WM_DELETE_WINDOW',
                                 partial(self.close_stats, partner))
@@ -131,33 +131,30 @@ class DisplayStats:
 
         # strings for stats labels...
 
-        success_string = (f"Success Rate: {rounds_won} / {rounds_played}"
-                          f" ({success_rate:.0f}%)")
-        total_score_string = f"Total score {total_score}"
-        max_possible_string = f"Maximum Possible ScoreL {max_possible}"
+        success_string = f"Success Rate: {rounds_won} / {rounds_played}" \
+                         f" ({success_rate:.0f}%)"
+        total_score_string = f"Total Score: {total_score}"
+        max_possible_string = f"Maximum Possible Score: {max_possible}"
         best_score_string = f"Best Score: {best_score}"
+        average_score_string = f"Average Score: {average_score:.1f}"
 
         # custom comment text and formatting
         if total_score == max_possible:
-            comment_string = ("Amazing! You got the highest "
-                              "possible score!")
+            comment_string = "Amazing! You got the " \
+                             "highest possible score!"
             comment_colour = "#D5E8D4"
         elif total_score == 0:
-            comment_string = ("Oops - You've lost every round! "
-                              "You might want ti look at the hints!")
+            comment_string = "Oops - You lost every round! " \
+                             "Try using the hints!"
             comment_colour = "#F8CECC"
             best_score_string = f"Best score: n/a"
         else:
             comment_string = ""
             comment_colour = "#F0F0F0"
 
-        average_score_string = f"Average Score: {average_score:.0f}\n"
-
         heading_font = ("Arial", "16", "bold")
         normal_font = ("Arial", "14")
-        comment_font = ("Arial", "13")
 
-        # label list (text | font | 'Sticky')
         all_stats_strings = [
             ["Statistics", heading_font, ""],
             [success_string, normal_font, "W"],
@@ -172,20 +169,16 @@ class DisplayStats:
         stats_label_ref_list = []
         for count, item in enumerate(all_stats_strings):
             self.stats_label = Label(self.stats_frame, text=item[0], font=item[1],
-                                     anchor="w", justify="left",
-                                     padx=30, pady=5)
+                                     anchor="w", justify="left", padx=30, pady=5)
             self.stats_label.grid(row=count, sticky=item[2], padx=10)
             stats_label_ref_list.append(self.stats_label)
 
-        # Configure comment label background (for all won / all lost)
-        stats_comment_label = stats_label_ref_list[4]
-        stats_comment_label.config(bg=comment_colour)
+        # Highlight comment label
+        stats_label_ref_list[4].config(bg=comment_colour)
 
-        self.dismiss_button = Button(self.stats_frame,
-                                     font=("Arial", "12", "bold"),
-                                     text="Dismiss", bg="#333333",
-                                     fg="#FFFFFF", width=20,
-                                     command=partial(self.close_stats, partner))
+        self.dismiss_button = Button(self.stats_frame, font=("Arial", "12", "bold"),
+                                     text="Dismiss", bg="#333333", fg="#FFFFFF",
+                                     width=20, command=partial(self.close_stats, partner))
         self.dismiss_button.grid(row=8, padx=10, pady=10)
 
         # closes help dialogue (used by button and x at top od dialogue)
