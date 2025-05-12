@@ -90,10 +90,9 @@ class StartGame:
         Checks users have entered 1 or more questions for quiz
         """
 
-        Play(5)
+        Play(10)
         # Hide root window (ie: hide rounds choice window).
         root.withdraw()
-
 
 
 class Play:
@@ -152,13 +151,14 @@ class Play:
         # set up buttons..
         self.movie_frame = Frame(self.quiz_frame)
         self.movie_frame.grid(row=3)
+        self.movie_frame.configure(bg="#EDE8D0")
 
         self.movie_button_ref = []
 
         # create four button in a 2 x2 grid
         for item in range(0, 4):
             self.movie_button = Button(self.movie_frame, font=("Arial", "12"),
-                                       text="Movie Name", width=15, bg="#FDFFD6", wraplength=150,
+                                       text="Movie Name", width=15, height=2, wraplength=160,
                                        command=partial(self.round_results, item))
             self.movie_button.grid(row=item // 2,
                                    column=item % 2,
@@ -168,11 +168,12 @@ class Play:
         # Frame to hold hints and stats buttons
         self.hints_stats_frame = Frame(self.quiz_frame)
         self.hints_stats_frame.grid(row=6)
+        self.hints_stats_frame.configure(bg="#EDE8D0")
 
         # List for buttons (frame | text | bg| command | width | row | column)
         control_button_list = [
             [self.quiz_frame, "Next Question", "#D0CEE2", self.new_question, 21, 5, None],
-            [self.hints_stats_frame, "Hints", "#FF8000", "", 10, 0, 0],
+            [self.hints_stats_frame, "Hints", "#FF8000", self.hint_button, 10, 0, 0],
             [self.hints_stats_frame, "Stats ", "#6A6868", "", 10, 0, 1],
             [self.quiz_frame, "End", "#990000", self.close_play, 21, 7, None],
         ]
@@ -233,6 +234,13 @@ class Play:
 
         self.next_button.config(state=DISABLED)
 
+    def hint_button(self):
+        """
+        Displays hints for playing game
+        :return:
+        """
+        DisplayHints(self)
+
     def round_results(self, user_choice):
         """
         Retrieves which buttons was pushed (index 0 -3 ), retrieves
@@ -289,10 +297,75 @@ class Play:
         self.play_box.destroy()
 
 
+class DisplayHints:
+    """
+    Displays hints for Colour Quest Game
+    """
+    def __init__(self, partner):
+        # set dialogue box and background colour
+        background = "#FFF2CC"
+        self.hint_box = Toplevel()
+
+        # disable hint button
+        partner.hint_button.config(state=DISABLED)
+
+        # if users press cross at top, closes hint and
+        # 'releases' hint button
+        self.hint_box.protocol('WM_DELETE_WINDOW',
+                               partial(self.close_hint, partner))
+
+        self.hint_frame = Frame(self.hint_box, width=300,
+                                height=200)
+        self.hint_frame.grid()
+
+        self.hint_heading_label = Label(self.hint_frame,
+                                        text="Hints",
+                                        font=("Arial", "24", "bold"))
+        self.hint_heading_label.grid(row=0)
+
+        hint_text = "This quiz will show a quote and four " \
+                    "movies. Your goal is to choose the correct " \
+                    "movie the quote is from and collect points " \
+                    "on the way.\n\n" \
+                    "You expect to see movies with various " \
+                    "genres like comedy, romance, horror etc.\n\n " \
+                    "Make sure you choose the right movie\n\n" \
+                    "Good luck!" \
+
+        self.hint_text_label = Label(self.hint_frame,
+                                     text=hint_text, wraplength=300,
+                                     justify="left")
+        self.hint_text_label.grid(row=1, padx=10)
+
+        self.dismiss_button = Button(self.hint_frame,
+                                     font=("Arial", "18", "bold"),
+                                     text="Close", bg="#FEDC85",
+                                     fg="#333333",
+                                     command=partial(self.close_hint, partner))
+        self.dismiss_button.grid(row=2, padx=10, pady=10)
+
+        # list and loop to set background color on
+        # everything except the buttons
+        recolor_list = [self.hint_frame, self.hint_heading_label,
+                        self.hint_text_label]
+
+        for item in recolor_list:
+            item.config(bg=background)
+
+    def close_hint(self, partner):
+        """
+        closes hint dialogue (and enables hint button)
+        :param partner:
+        :return:
+        """
+        # put hint button back to normal
+        partner.hints_button.config(state=NORMAL)
+        self.hint_box.destroy()
+
+
 # main routine
 if __name__ == "__main__":
     root = Tk()
     root.title("Movie Quote Quiz")
     StartGame()
     root.mainloop()
-
