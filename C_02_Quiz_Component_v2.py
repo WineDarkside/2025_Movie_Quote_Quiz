@@ -173,7 +173,7 @@ class Play:
         # List for buttons (frame | text | bg| command | width | row | column)
         control_button_list = [
             [self.quiz_frame, "Next Question", "#D0CEE2", self.new_question, 21, 5, None],
-            [self.hints_stats_frame, "Hints", "#FF8000", self.hint_button, 10, 0, 0],
+            [self.hints_stats_frame, "Hints", "#FF8000", self.to_hints, 10, 0, 0],
             [self.hints_stats_frame, "Stats ", "#6A6868", "", 10, 0, 1],
             [self.quiz_frame, "End", "#990000", self.close_play, 21, 7, None],
         ]
@@ -190,6 +190,7 @@ class Play:
 
         # Retrieve next, stats and end button so that they can be configured
         self.next_button = control_ref_list[0]
+        self.hint_button = control_ref_list[1]
         self.stats_button = control_ref_list[2]
         self.end_game_button = control_ref_list[3]
 
@@ -234,7 +235,7 @@ class Play:
 
         self.next_button.config(state=DISABLED)
 
-    def hint_button(self):
+    def to_hints(self):
         """
         Displays hints for playing game
         :return:
@@ -359,7 +360,7 @@ class DisplayHints:
         :return:
         """
         # put hint button back to normal
-        partner.hints_button.config(state=NORMAL)
+        partner.hint_button.config(state=NORMAL)
         self.hint_box.destroy()
 
 
