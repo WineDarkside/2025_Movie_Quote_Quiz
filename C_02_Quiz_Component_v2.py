@@ -112,6 +112,8 @@ class Play:
         self.questions_wanted = IntVar()
         self.questions_wanted.set(how_many)
 
+        self.rounds_won = IntVar()
+
         # movie list and score list
         self.question_quotes_list = []
         self.all_scores_list = []
@@ -122,6 +124,8 @@ class Play:
         self.quiz_frame = Frame(self.play_box)
         self.quiz_frame.grid(padx=10, pady=10)
         self.quiz_frame.configure(bg="#EDE8D0")
+
+        self.all_high_score_list = []
 
         # body font for most labels...
         body_font = ("Arial", "12")
@@ -158,7 +162,7 @@ class Play:
         # create four button in a 2 x2 grid
         for item in range(0, 4):
             self.movie_button = Button(self.movie_frame, font=("Arial", "12"),
-                                       text="Movie Name", width=15, height=2, wraplength=160,
+                                       text="Movie Name", bg="#FDFFD6", width=15, height=2, wraplength=160,
                                        command=partial(self.round_results, item))
             self.movie_button.grid(row=item // 2,
                                    column=item % 2,
@@ -174,7 +178,7 @@ class Play:
         control_button_list = [
             [self.quiz_frame, "Next Question", "#D0CEE2", self.new_question, 21, 5, None],
             [self.hints_stats_frame, "Hints", "#FF8000", self.to_hints, 10, 0, 0],
-            [self.hints_stats_frame, "Stats ", "#6A6868", "", 10, 0, 1],
+            [self.hints_stats_frame, "Stats ", "#6A6868", self.to_stats, 10, 0, 1],
             [self.quiz_frame, "End", "#990000", self.close_play, 21, 7, None],
         ]
 
@@ -210,6 +214,7 @@ class Play:
         self.questions_played.set(rounds_played)
 
         rounds_wanted = self.questions_wanted.get()
+        rounds_won = self.rounds_won.get()
 
         # get rounds movies and median score.
         self.question_quotes_list, median = get_movie_options()
@@ -297,11 +302,24 @@ class Play:
         root.deiconify()
         self.play_box.destroy()
 
+    def to_stats(self):
+        """
+        Retrieves everything we need to display the game / round statistics
+        """
+        # Important: retrieve number of rounds
+        # won as a number (rather than the 'self' container)
+        rounds_won = self.rounds_won.get()
+        stats_bundle = [rounds_won, self.all_scores_list,
+                        self.all_high_score_list]
+
+        DisplayStats(self, stats_bundle)
+
 
 class DisplayHints:
     """
     Displays hints for Colour Quest Game
     """
+
     def __init__(self, partner):
         # set dialogue box and background colour
         background = "#FFF2CC"
@@ -362,6 +380,103 @@ class DisplayHints:
         # put hint button back to normal
         partner.hint_button.config(state=NORMAL)
         self.hint_box.destroy()
+
+
+class DisplayStats:
+    """
+    Displays stats for Movie quote quiz
+    """
+
+    def __init__(self, partner, all_stats_info):
+        # extract information from master list...
+        rounds_won = all_stats_info[0]
+        user_scores = all_stats_info[1]
+        high_scores = all_stats_info[2]
+
+        # sort user scores to find the high score...
+        user_scores.sort()
+
+        self.stats_box = Toplevel()
+
+        # disable stats button
+        partner.stats_button.config(state=DISABLED)
+
+        # if users press the cross at the top, closes stats and
+        # 'releases' stats button
+        self.stats_box.protocol('WM_DELETE_WINDOW',
+                                partial(self.close_stats, partner))
+
+        self.stats_frame = Frame(self.stats_box, width=300)
+        self.stats_frame.grid()
+
+        # Math to populate Stats dialogue...
+        rounds_played = len(user_scores)
+
+        success_rate = rounds_won / rounds_played * 100
+        total_score = sum(user_scores)
+        max_possible = sum(high_scores)
+
+        best_score = user_scores[-1]
+        average_score = total_score / rounds_played
+
+        # strings for stats labels...
+
+        success_string = f"Success Rate: {rounds_won} / {rounds_played}" \
+                         f" ({success_rate:.0f}%)"
+        total_score_string = f"Total Score: {total_score}"
+        max_possible_string = f"Maximum Score: {max_possible}"
+        best_score_string = f"Best Score: {best_score}"
+        average_score_string = f"Average Score: {average_score:.1f}"
+
+        # custom comment text and formatting
+        if total_score == max_possible:
+            comment_string = "Amazing! You got the \n" \
+                             "highest possible score!"
+            comment_colour = "#D5E8D4"
+        elif total_score == 0:
+            comment_string = "Oops - You got all the question\n " \
+                             "wrong Try using the hints!"
+            comment_colour = "#F8CECC"
+            best_score_string = f"Best score: n/a"
+        else:
+            comment_string = ""
+            comment_colour = "#F0F0F0"
+
+        heading_font = ("Arial", "16", "bold")
+        normal_font = ("Arial", "14")
+
+        all_stats_strings = [
+            ["Statistics", heading_font, ""],
+            [success_string, normal_font, "W"],
+            [total_score_string, normal_font, "W"],
+            [max_possible_string, normal_font, "W"],
+            [comment_string, normal_font, "W"],
+            ["\nRound Stats", heading_font, ""],
+            [best_score_string, normal_font, "W"],
+            [average_score_string, normal_font, "W"]
+        ]
+
+        stats_label_ref_list = []
+        for count, item in enumerate(all_stats_strings):
+            self.stats_label = Label(self.stats_frame, text=item[0], font=item[1],
+                                     anchor="w", justify="left", padx=30, pady=5)
+            self.stats_label.grid(row=count, sticky=item[2], padx=10)
+            stats_label_ref_list.append(self.stats_label)
+
+        # Highlight comment label
+        stats_label_ref_list[4].config(bg=comment_colour)
+
+        self.dismiss_button = Button(self.stats_frame, font=("Arial", "12", "bold"),
+                                     text="Dismiss", bg="#333333", fg="#FFFFFF",
+                                     width=20, command=partial(self.close_stats, partner))
+        self.dismiss_button.grid(row=8, padx=10, pady=10)
+
+        # closes help dialogue (used by button and x at top od dialogue)
+
+    def close_stats(self, partner):
+        # put stats button back to normal
+        partner.stats_button.config(state=NORMAL)
+        self.stats_box.destroy()
 
 
 # main routine
