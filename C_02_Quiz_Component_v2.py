@@ -90,7 +90,7 @@ class StartGame:
         Checks users have entered 1 or more questions for quiz
         """
 
-        Play(10)
+        Play(5)
         # Hide root window (ie: hide rounds choice window).
         root.withdraw()
 
@@ -134,7 +134,6 @@ class Play:
         play_labels_list = [
             ["Question # of #", ("Arial", "16", "bold"), None, 0],
             ["Movie Quote", body_font, None, 1],
-
             ["Choose a movie below. Good Luck.", body_font, "#F0F0F0", 2],
             ["You chose, result", body_font, "#D5E8D4", 4]
         ]
@@ -210,11 +209,11 @@ class Play:
 
         # retrieve number of rounds played, add one to it and configure heading
         rounds_played = self.questions_played.get()
-        rounds_played += 1
+        # rounds_played += 1
         self.questions_played.set(rounds_played)
 
         rounds_wanted = self.questions_wanted.get()
-        rounds_won = self.rounds_won.get()
+        # rounds_won = self.rounds_won.get()
 
         # get rounds movies and median score.
         self.question_quotes_list, median = get_movie_options()
@@ -235,7 +234,7 @@ class Play:
         for count, button in enumerate(self.movie_button_ref):
             button.config(text=movie_names[count], state=NORMAL, pady=10, padx=10)
 
-        self.heading_label.config(text=f"Round {rounds_played} of {rounds_wanted}")
+        self.heading_label.config(text=f"Round {rounds_played + 1} of {rounds_wanted}")
         self.results_label.config(text=f"{'=' * 7}", bg="#EDE8D0")
 
         self.next_button.config(state=DISABLED)
@@ -253,9 +252,19 @@ class Play:
         score and then compares it with median, updates results
         and adds results to stats list.
         """
+        # enable stats button after at least one round has been played
+        self.stats_button.config(state=NORMAL)
 
         # Get user score and movie bases in button press...
-        score = int(self.question_quotes_list[user_choice][2])
+        # score = int(self.question_quotes_list[user_choice][2])
+
+        # Add one to the number of rounds played and retrieve
+        # the number of rounds won...
+        questions_played = self.questions_played.get()
+        questions_played += 1
+        self.questions_played.set(questions_played)
+
+        rounds_won = self.rounds_won.get()
 
         # alternate way to get button name. Good for it buttons have been scrambled
         movie_name = self.movie_button_ref[user_choice].cget('text')
@@ -270,6 +279,10 @@ class Play:
                 result_text = f"Success! {movie_name} earned you {self.correct_score} points"
                 result_bg = "#D5E8D4"
                 self.all_scores_list.append(self.correct_score)
+
+                rounds_won = self.rounds_won.get()
+                rounds_won += 1
+                self.rounds_won.set(rounds_won)
             else:
                 result_text = f"Oops, correct movie was {self.correct_movie}."
                 result_bg = "#F8CECC"
@@ -290,6 +303,13 @@ class Play:
         questions_wanted = self.questions_wanted.get()
 
         if questions_played == questions_wanted:
+            # work out success rate
+            success_rate = rounds_won / questions_played * 100
+            success_string = (f"Success Rate: "
+                              f"{rounds_won} / {questions_played} "
+                              f"({success_rate:.0f}%)")
+
+            self.results_label.config(text=success_string)
             self.next_button.config(state=DISABLED, text="Game over")
             self.end_game_button.config(text="Play Again", bg="#006600")
 
