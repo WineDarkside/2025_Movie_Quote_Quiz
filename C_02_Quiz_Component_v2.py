@@ -287,10 +287,12 @@ class Play:
                 result_text = f"Oops, correct movie was {self.correct_movie}."
                 result_bg = "#F8CECC"
                 self.all_scores_list.append(0)
+                self.all_high_score_list.append(self.correct_score)
         else:
             result_text = f"Oops, wrong movie! The correct answer was {self.correct_movie}."
             result_bg = "#F8CECC"
             self.all_scores_list.append(0)
+            self.all_high_score_list.append(self.correct_score)
 
         self.results_label.config(text=result_text, bg=result_bg)
 
@@ -299,7 +301,7 @@ class Play:
         self.stats_button.config(state=NORMAL)
 
         # check to see if game is over
-        questions_played = self.questions_played.get()
+        # questions_played = self.questions_played.get()
         questions_wanted = self.questions_wanted.get()
 
         if questions_played == questions_wanted:
@@ -434,7 +436,7 @@ class DisplayStats:
 
         success_rate = rounds_won / rounds_played * 100
         total_score = sum(user_scores)
-        max_possible = sum(high_scores)
+        max_possible = rounds_played
 
         best_score = user_scores[-1]
         average_score = total_score / rounds_played
