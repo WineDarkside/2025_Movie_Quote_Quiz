@@ -132,7 +132,7 @@ class Play:
 
         # List for label details (text | font| background | row)
         play_labels_list = [
-            ["Question # of #", ("Arial", "16", "bold"), None, 0],
+            ["Question # of #", ("Arial", "20", "bold"), None, 0],
             ["Movie Quote", body_font, None, 1],
             ["Choose a movie below. Good Luck.", body_font, "#F0F0F0", 2],
             ["You chose, result", body_font, "#D5E8D4", 4]
@@ -160,8 +160,8 @@ class Play:
 
         # create four button in a 2 x2 grid
         for item in range(0, 4):
-            self.movie_button = Button(self.movie_frame, font=("Arial", "12"),
-                                       text="Movie Name", bg="#FDFFD6", width=15, height=2, wraplength=160,
+            self.movie_button = Button(self.movie_frame, font=("Arial", "11"),
+                                       text="Movie Name", bg="#FDFFD6", width=15, height=2, wraplength=150,
                                        command=partial(self.round_results, item))
             self.movie_button.grid(row=item // 2,
                                    column=item % 2,
@@ -175,10 +175,10 @@ class Play:
 
         # List for buttons (frame | text | bg| command | width | row | column)
         control_button_list = [
-            [self.quiz_frame, "Next Question", "#D0CEE2", self.new_question, 21, 5, None],
-            [self.hints_stats_frame, "Hints", "#FF8000", self.to_hints, 10, 0, 0],
-            [self.hints_stats_frame, "Stats ", "#6A6868", self.to_stats, 10, 0, 1],
-            [self.quiz_frame, "End", "#990000", self.close_play, 21, 7, None],
+            [self.quiz_frame, "Next Question", "#D0CEE2", self.new_question, 25, 5, None],
+            [self.hints_stats_frame, "Hints", "#FEDC85", self.to_hints, 11, 0, 0],
+            [self.hints_stats_frame, "Stats ", "#888686", self.to_stats, 12, 0, 1],
+            [self.quiz_frame, "End", "#AA2728", self.close_play, 25, 7, None],
         ]
 
         # create buttons and add to list
@@ -187,7 +187,7 @@ class Play:
             make_control_button = Button(item[0], text=item[1], bg=item[2],
                                          command=item[3], font=("Arial", "16", "bold"),
                                          fg="#FFFFFF", width=item[4])
-            make_control_button.grid(row=item[5], column=item[6], padx=5, pady=5)
+            make_control_button.grid(row=item[5], column=item[6], padx=5, pady=5, width=item[4], height=2)
 
             control_ref_list.append(make_control_button)
 
@@ -223,7 +223,7 @@ class Play:
 
         # randomly choose a movie from the 4 to display its quote
         quote_movie = random.choice(self.question_quotes_list)
-        self.quote_label.config(text=quote_movie[0], bg="#D5E8D4", font=("Arial", "14", "bold"))
+        self.quote_label.config(text=quote_movie[0], bg="#FFFFFF", font=("Arial", "14", "bold"))
         self.correct_movie = quote_movie[1]
         self.correct_score = int(quote_movie[2])
 
