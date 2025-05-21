@@ -80,7 +80,7 @@ class StartGame:
         self.start_frame.configure(bg="#EDE8D0")
 
         # Create play button...
-        self.play_button = Button(self.start_frame, font=("Arial", "16", "bold"),
+        self.play_button = Button(self.start_frame, font=("Arial", 16, "bold"),
                                   fg="#333333", bg="#D0CEE2", text="Play", width=10,
                                   command=self.check_questions)
         self.play_button.grid(row=0, column=1)
@@ -109,6 +109,9 @@ class Play:
         self.questions_played = IntVar()
         self.questions_played.set(0)
 
+        self.rounds_played = IntVar()
+        self.rounds_played.set(0)
+
         self.questions_wanted = IntVar()
         self.questions_wanted.set(how_many)
 
@@ -132,7 +135,7 @@ class Play:
 
         # List for label details (text | font| background | row)
         play_labels_list = [
-            ["Question # of #", ("Arial", "20", "bold"), None, 0],
+            ["Question # of #", ("Arial", "16", "bold"), None, 0],
             ["Movie Quote", body_font, None, 1],
             ["Choose a movie below. Good Luck.", body_font, "#F0F0F0", 2],
             ["You chose, result", body_font, "#D5E8D4", 4]
@@ -160,8 +163,8 @@ class Play:
 
         # create four button in a 2 x2 grid
         for item in range(0, 4):
-            self.movie_button = Button(self.movie_frame, font=("Arial", "11"),
-                                       text="Movie Name", bg="#FDFFD6", width=15, height=2, wraplength=150,
+            self.movie_button = Button(self.movie_frame, font=("Arial", 12),
+                                       text="Movie Name", bg="#FDFFD6", width=15, height=2, wraplength=160,
                                        command=partial(self.round_results, item))
             self.movie_button.grid(row=item // 2,
                                    column=item % 2,
@@ -175,19 +178,19 @@ class Play:
 
         # List for buttons (frame | text | bg| command | width | row | column)
         control_button_list = [
-            [self.quiz_frame, "Next Question", "#D0CEE2", self.new_question, 25, 5, None],
-            [self.hints_stats_frame, "Hints", "#FEDC85", self.to_hints, 11, 0, 0],
-            [self.hints_stats_frame, "Stats ", "#888686", self.to_stats, 12, 0, 1],
-            [self.quiz_frame, "End", "#AA2728", self.close_play, 25, 7, None],
+            [self.quiz_frame, "Next Question", "#D0CEE2", self.new_question, 24, 5, None],
+            [self.hints_stats_frame, "Hints", "#FF8000", self.to_hints, 11, 0, 0],
+            [self.hints_stats_frame, "Stats ", "#6A6868", self.to_stats, 11, 0, 1],
+            [self.quiz_frame, "End", "#990000", self.close_play, 24, 7, None],
         ]
 
         # create buttons and add to list
         control_ref_list = []
         for item in control_button_list:
             make_control_button = Button(item[0], text=item[1], bg=item[2],
-                                         command=item[3], font=("Arial", "16", "bold"),
+                                         command=item[3], font=("Arial", 16, "bold"),
                                          fg="#FFFFFF", width=item[4])
-            make_control_button.grid(row=item[5], column=item[6], padx=5, pady=5, width=item[4], height=2)
+            make_control_button.grid(row=item[5], column=item[6], padx=5, pady=5)
 
             control_ref_list.append(make_control_button)
 
@@ -195,6 +198,7 @@ class Play:
         self.next_button = control_ref_list[0]
         self.hint_button = control_ref_list[1]
         self.stats_button = control_ref_list[2]
+        self.stats_button.config(state=DISABLED)
         self.end_game_button = control_ref_list[3]
 
         # once interface has been created, invoke new
@@ -203,7 +207,7 @@ class Play:
 
     def new_question(self):
         """
-        Choose four movies, works our median for score to beat. Confiqures
+        Choose four movies, works our median for score to beat. Configures
         buttons with chosen movies
         """
 
@@ -223,7 +227,7 @@ class Play:
 
         # randomly choose a movie from the 4 to display its quote
         quote_movie = random.choice(self.question_quotes_list)
-        self.quote_label.config(text=quote_movie[0], bg="#FFFFFF", font=("Arial", "14", "bold"))
+        self.quote_label.config(text=quote_movie[0], bg="#D5E8D4", font=("Arial", "14", "bold"))
         self.correct_movie = quote_movie[1]
         self.correct_score = int(quote_movie[2])
 
@@ -244,7 +248,11 @@ class Play:
         Displays hints for playing game
         :return:
         """
-        DisplayHints(self)
+        # check we have played at least one round so that
+        # stats button is not enabled in error.
+        rounds_played = self.rounds_played.get()
+
+        DisplayHints(self, rounds_played)
 
     def round_results(self, user_choice):
         """
@@ -342,13 +350,18 @@ class DisplayHints:
     Displays hints for Colour Quest Game
     """
 
-    def __init__(self, partner):
+    def __init__(self, partner, rounds_played):
+        self.rounds_played = rounds_played
+
         # set dialogue box and background colour
         background = "#FFF2CC"
         self.hint_box = Toplevel()
 
-        # disable hint button
+        # disable hint, stats and end game buttons to prevent users
+        # from leaving a dialogue open and then going back to the rounds dialogue
         partner.hint_button.config(state=DISABLED)
+        partner.end_game_button.config(state=DISABLED)
+        partner.stats_button.config(state=DISABLED)
 
         # if users press cross at top, closes hint and
         # 'releases' hint button
@@ -361,7 +374,7 @@ class DisplayHints:
 
         self.hint_heading_label = Label(self.hint_frame,
                                         text="Hints",
-                                        font=("Arial", "24", "bold"))
+                                        font=("Arial", 24, "bold"))
         self.hint_heading_label.grid(row=0)
 
         hint_text = "This quiz will show a quote and four " \
@@ -379,7 +392,7 @@ class DisplayHints:
         self.hint_text_label.grid(row=1, padx=10)
 
         self.dismiss_button = Button(self.hint_frame,
-                                     font=("Arial", "18", "bold"),
+                                     font=("Arial", 18, "bold"),
                                      text="Close", bg="#FEDC85",
                                      fg="#333333",
                                      command=partial(self.close_hint, partner))
@@ -401,6 +414,12 @@ class DisplayHints:
         """
         # put hint button back to normal
         partner.hint_button.config(state=NORMAL)
+        partner.end_game_button.config(state=NORMAL)
+        # played at least one round
+        if self.rounds_played >= 1:
+            partner.stats_button.config(state=NORMAL)
+
+
         self.hint_box.destroy()
 
 
@@ -410,10 +429,16 @@ class DisplayStats:
     """
 
     def __init__(self, partner, all_stats_info):
+        # disable buttons to prevent program crashing
+        partner.hint_button.config(state=DISABLED)
+        partner.end_game_button.config(state=DISABLED)
+        partner.stats_button.config(state=DISABLED)
+
+
         # extract information from master list...
         rounds_won = all_stats_info[0]
         user_scores = all_stats_info[1]
-        high_scores = all_stats_info[2]
+        # high_scores = all_stats_info[2]
 
         # sort user scores to find the high score...
         user_scores.sort()
@@ -421,7 +446,7 @@ class DisplayStats:
         self.stats_box = Toplevel()
 
         # disable stats button
-        partner.stats_button.config(state=DISABLED)
+        # partner.stats_button.config(state=DISABLED)
 
         # if users press the cross at the top, closes stats and
         # 'releases' stats button
@@ -488,7 +513,7 @@ class DisplayStats:
         # Highlight comment label
         stats_label_ref_list[4].config(bg=comment_colour)
 
-        self.dismiss_button = Button(self.stats_frame, font=("Arial", "12", "bold"),
+        self.dismiss_button = Button(self.stats_frame, font=("Arial", 12, "bold"),
                                      text="Dismiss", bg="#333333", fg="#FFFFFF",
                                      width=20, command=partial(self.close_stats, partner))
         self.dismiss_button.grid(row=8, padx=10, pady=10)
@@ -497,9 +522,11 @@ class DisplayStats:
 
     def close_stats(self, partner):
         # put stats button back to normal
+        partner.hint_button.config(state=NORMAL)
+        partner.end_game_button.config(state=NORMAL)
         partner.stats_button.config(state=NORMAL)
-        self.stats_box.destroy()
 
+        self.stats_box.destroy()
 
 # main routine
 if __name__ == "__main__":
