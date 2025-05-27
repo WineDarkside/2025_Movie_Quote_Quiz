@@ -89,7 +89,7 @@ class StartGame:
 
         # List of labels to be made (text | font| fg)
         start_labels_list = [
-            ["Movie Quote Quiz", ("Arial ", "16", "bold"), None],
+            ["Movie Quote Quiz", ("Times New Roman ", "18", "bold"), None],
             [intro_string, ("Arial", "12"), None],
             [choose_string, ("Arial", "12", "bold"), "#009900"],
         ]
@@ -110,7 +110,7 @@ class StartGame:
         self.choose_label = start_label_ref[2]
 
         # Frame so that entry box and button can be in the same row
-        self.entry_area_frame = Frame(self.start_frame)
+        self.entry_area_frame = Frame(self.start_frame,bg=background)
         self.entry_area_frame.grid(row=3)
 
         self.num_rounds_entry = Entry(self.entry_area_frame, font=("Arial", 20, "bold"),
@@ -179,6 +179,8 @@ class Play:
 
     def __init__(self, how_many):
 
+        background = "#EDE8D0"
+
         # Integers / String Variables
         self.target_score = IntVar()
 
@@ -201,9 +203,8 @@ class Play:
 
         self.play_box = Toplevel()
 
-        self.quiz_frame = Frame(self.play_box)
+        self.quiz_frame = Frame(self.play_box, bg=background)
         self.quiz_frame.grid(padx=10, pady=10)
-        self.quiz_frame.configure(bg="#EDE8D0")
 
         self.all_high_score_list = []
 
@@ -232,9 +233,8 @@ class Play:
         self.results_label = play_labels_ref[3]
 
         # set up buttons..
-        self.movie_frame = Frame(self.quiz_frame)
+        self.movie_frame = Frame(self.quiz_frame, bg=background)
         self.movie_frame.grid(row=3)
-        self.movie_frame.configure(bg="#EDE8D0")
 
         self.movie_button_ref = []
 
@@ -249,14 +249,13 @@ class Play:
             self.movie_button_ref.append(self.movie_button)
 
         # Frame to hold hints and stats buttons
-        self.hints_stats_frame = Frame(self.quiz_frame)
+        self.hints_stats_frame = Frame(self.quiz_frame, bg=background)
         self.hints_stats_frame.grid(row=6)
-        self.hints_stats_frame.configure(bg="#EDE8D0")
 
         # List for buttons (frame | text | bg| command | width | row | column)
         control_button_list = [
             [self.quiz_frame, "Next Question", "#D0CEE2", self.new_question, 24, 5, None],
-            [self.hints_stats_frame, "Hints", "#FF8000", self.to_hints, 11, 0, 0],
+            [self.hints_stats_frame, "Help", "#FF8000", self.to_hints, 11, 0, 0],
             [self.hints_stats_frame, "Stats ", "#6A6868", self.to_stats, 11, 0, 1],
             [self.quiz_frame, "End", "#990000", self.close_play, 24, 7, None],
         ]
