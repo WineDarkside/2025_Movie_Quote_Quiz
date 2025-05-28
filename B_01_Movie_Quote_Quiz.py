@@ -311,8 +311,9 @@ class Play:
         movie_names = [movie[1] for movie in self.question_quotes_list]
         random.shuffle(movie_names)
 
+        # from round_results changes the colors back to original color
         for count, button in enumerate(self.movie_button_ref):
-            button.config(text=movie_names[count], state=NORMAL, pady=10, padx=10)
+            button.config(text=movie_names[count], state=NORMAL, pady=10, padx=10, bg="#FDFFD6")
 
         self.heading_label.config(text=f"Round {rounds_played + 1} of {rounds_wanted}")
         self.results_label.config(text=f"{'=' * 7}", bg="#EDE8D0")
@@ -357,6 +358,10 @@ class Play:
         target = self.target_score.get()
         self.all_medians_list.append(target)
 
+        # Reset all button backgrounds to default
+        for button in self.movie_button_ref:
+            button.config(bg="#FDFFD6")
+
         # Check if the selected movie matches the correct one
         if movie_name == self.correct_movie:
             if self.correct_score >= target:
@@ -364,19 +369,31 @@ class Play:
                 result_bg = "#D5E8D4"
                 self.all_scores_list.append(self.correct_score)
 
-                rounds_won = self.rounds_won.get()
                 rounds_won += 1
                 self.rounds_won.set(rounds_won)
+
+                # selected button turns green (correct)
+                self.movie_button_ref[user_choice].config(bg="#D5E8D4")
             else:
                 result_text = f"Oops, correct movie was {self.correct_movie}."
                 result_bg = "#F8CECC"
                 self.all_scores_list.append(0)
                 self.all_high_score_list.append(self.correct_score)
+
         else:
             result_text = f"Oops, wrong movie! The correct answer was {self.correct_movie}."
             result_bg = "#F8CECC"
             self.all_scores_list.append(0)
             self.all_high_score_list.append(self.correct_score)
+
+            # selected button turns red (incorrect)
+            self.movie_button_ref[user_choice].config(bg="#F8CECC")
+
+            # Turn the correct movie button green
+            for i, button in enumerate(self.movie_button_ref):
+                if button.cget('text') == self.correct_movie:
+                    button.config(bg="#D5E8D4")
+                    break
 
         self.results_label.config(text=result_text, bg=result_bg)
 
