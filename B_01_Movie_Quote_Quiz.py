@@ -184,19 +184,15 @@ class Play:
         # Integers / String Variables
         self.target_score = IntVar()
 
-        # rounds played - start with zero
-        # self.questions_played = IntVar()
-        # self.questions_played.set(0)
-
-        self.rounds_played = IntVar()
-        self.rounds_played.set(0)
+        self.questions_played = IntVar()
+        self.questions_played.set(0)
 
         self.questions_wanted = IntVar()
         self.questions_wanted.set(how_many)
 
         self.rounds_won = IntVar()
 
-        # movie list and score list
+        # quote list and score list
         self.question_quotes_list = []
         self.all_scores_list = []
         self.all_medians_list = []
@@ -289,9 +285,7 @@ class Play:
         """
 
         # retrieve number of rounds played, add one to it and configure heading
-        rounds_played = self.rounds_played.get()
-        # rounds_played += 1
-        # self.questions_played.set(rounds_played)
+        questions_played = self.questions_played.get()
 
         questions_wanted = self.questions_wanted.get()
         # rounds_won = self.rounds_won.get()
@@ -304,7 +298,7 @@ class Play:
 
         # randomly choose a movie from the 4 to display its quote
         quote_movie = random.choice(self.question_quotes_list)
-        self.quote_label.config(text=quote_movie[0], font=("Arial", "14", "bold"))
+        self.quote_label.config(text=quote_movie[0], bg="#FFFFFF", font=("Arial", "14", "bold"))
         self.correct_movie = quote_movie[1]
         self.correct_score = int(quote_movie[2])
 
@@ -316,7 +310,7 @@ class Play:
         for count, button in enumerate(self.movie_button_ref):
             button.config(text=movie_names[count], state=NORMAL, pady=10, padx=10, bg="#FDFFD6")
 
-        self.heading_label.config(text=f"Round {rounds_played + 1} of {questions_wanted}")
+        self.heading_label.config(text=f"Question {questions_played + 1} of {questions_wanted}")
         self.results_label.config(text=f"{'=' * 7}", bg="#EDE8D0")
 
         self.next_button.config(state=DISABLED)
@@ -328,9 +322,9 @@ class Play:
         """
         # check we have played at least one round so that
         # stats button is not enabled in error.
-        rounds_played = self.rounds_played.get()
+        questions_played = self.questions_played.get()
 
-        DisplayHints(self, rounds_played)
+        DisplayHints(self, questions_played)
 
     def round_results(self, user_choice):
         """
@@ -346,8 +340,8 @@ class Play:
 
         # Add one to the number of rounds played and retrieve
         # the number of rounds won...
-        #  = self.questions_played.get() + 1
-        # self.questions_played.set(questions_played)
+        questions_played = self.questions_played.get() + 1
+        self.questions_played.set(questions_played)
 
         rounds_won = self.rounds_won.get()
 
@@ -402,14 +396,14 @@ class Play:
         self.stats_button.config(state=NORMAL)
 
         # check to see if game is over
-        rounds_played = self.rounds_played.get()
+        questions_played = self.questions_played.get()
         questions_wanted = self.questions_wanted.get()
 
-        if rounds_played == questions_wanted:
+        if questions_played == questions_wanted:
             # work out success rate
-            success_rate = rounds_won / rounds_played * 100
+            success_rate = rounds_won / questions_played * 100
             success_string = (f"Success Rate: "
-                              f"{rounds_won} / {rounds_played} "
+                              f"{rounds_won} / {questions_played} "
                               f"({success_rate:.0f}%)")
 
             self.results_label.config(text=success_string)
@@ -443,8 +437,8 @@ class DisplayHints:
     Displays hints for Colour Quest Game
     """
 
-    def __init__(self, partner, rounds_played):
-        self.rounds_played = rounds_played
+    def __init__(self, partner, questions_played):
+        self.questions_played = questions_played
 
         # set dialogue box and background colour
         background = "#FFF2CC"
@@ -511,8 +505,7 @@ class DisplayHints:
 
         # only enable stats button if we have
         # played at least one round
-        print("rounds played...", self.rounds_played)
-        if self.rounds_played >= 1:
+        if self.questions_played >= 1:
             partner.stats_button.config(state=NORMAL)
 
         self.hint_box.destroy()
@@ -548,18 +541,18 @@ class DisplayStats:
         self.stats_frame.grid()
 
         # Math to populate Stats dialogue...
-        rounds_played = len(user_scores)
+        questions_played = len(user_scores)
 
-        success_rate = rounds_won / rounds_played * 100
+        success_rate = rounds_won / questions_played * 100
         total_score = sum(user_scores)
-        max_possible = rounds_played
+        max_possible = questions_played
 
         best_score = user_scores[-1]
-        average_score = total_score / rounds_played
+        average_score = total_score / questions_played
 
         # strings for stats labels...
 
-        success_string = f"Success Rate: {rounds_won} / {rounds_played}" \
+        success_string = f"Success Rate: {rounds_won} / {questions_played}" \
                          f" ({success_rate:.0f}%)"
         total_score_string = f"Total Score: {total_score}"
         max_possible_string = f"Maximum Score: {max_possible}"
