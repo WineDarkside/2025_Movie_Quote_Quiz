@@ -136,7 +136,7 @@ class StartGame:
         """
 
         # Retrieve temperature to be converted
-        rounds_wanted = self.num_rounds_entry.get()
+        questions_wanted = self.num_rounds_entry.get()
 
         # Reset label and entry box (for when users come back to home screen)
         self.choose_label.config(fg="#009900", font=("Arial", "12", "bold",))
@@ -147,13 +147,13 @@ class StartGame:
 
         # checks that amount to be converted is number above absolute zero
         try:
-            rounds_wanted = int(rounds_wanted)
-            if rounds_wanted > 0:
+            questions_wanted = int(questions_wanted)
+            if questions_wanted > 0:
                 # that when users play a new game, they don't see an error message
                 self.num_rounds_entry.delete(0, END)
                 self.choose_label.config(text="How many questions do you want to play?")
                 # Invoke Play Class (and take across number of rounds)
-                Play(rounds_wanted)
+                Play(questions_wanted)
                 # Hide root window (ie: hide rounds choice window)
                 root.withdraw()
 
@@ -185,8 +185,8 @@ class Play:
         self.target_score = IntVar()
 
         # rounds played - start with zero
-        self.questions_played = IntVar()
-        self.questions_played.set(0)
+        # self.questions_played = IntVar()
+        # self.questions_played.set(0)
 
         self.rounds_played = IntVar()
         self.rounds_played.set(0)
@@ -232,7 +232,7 @@ class Play:
         self.quote_label = play_labels_ref[1]
         self.results_label = play_labels_ref[3]
 
-        # set up buttons..
+        # set up buttons...
         self.movie_frame = Frame(self.quiz_frame, bg=background)
         self.movie_frame.grid(row=3)
 
@@ -274,8 +274,9 @@ class Play:
         self.next_button = control_ref_list[0]
         self.hint_button = control_ref_list[1]
         self.stats_button = control_ref_list[2]
-        self.stats_button.config(state=DISABLED)
         self.end_game_button = control_ref_list[3]
+
+        self.stats_button.config(state=DISABLED)
 
         # once interface has been created, invoke new
         # round function for first round
@@ -288,11 +289,11 @@ class Play:
         """
 
         # retrieve number of rounds played, add one to it and configure heading
-        rounds_played = self.questions_played.get()
+        rounds_played = self.rounds_played.get()
         # rounds_played += 1
-        self.questions_played.set(rounds_played)
+        # self.questions_played.set(rounds_played)
 
-        rounds_wanted = self.questions_wanted.get()
+        questions_wanted = self.questions_wanted.get()
         # rounds_won = self.rounds_won.get()
 
         # get rounds movies and median score.
@@ -303,7 +304,7 @@ class Play:
 
         # randomly choose a movie from the 4 to display its quote
         quote_movie = random.choice(self.question_quotes_list)
-        self.quote_label.config(text=quote_movie[0], bg="#FFFFFF", font=("Arial", "14", "bold"))
+        self.quote_label.config(text=quote_movie[0], font=("Arial", "14", "bold"))
         self.correct_movie = quote_movie[1]
         self.correct_score = int(quote_movie[2])
 
@@ -315,7 +316,7 @@ class Play:
         for count, button in enumerate(self.movie_button_ref):
             button.config(text=movie_names[count], state=NORMAL, pady=10, padx=10, bg="#FDFFD6")
 
-        self.heading_label.config(text=f"Round {rounds_played + 1} of {rounds_wanted}")
+        self.heading_label.config(text=f"Round {rounds_played + 1} of {questions_wanted}")
         self.results_label.config(text=f"{'=' * 7}", bg="#EDE8D0")
 
         self.next_button.config(state=DISABLED)
@@ -345,9 +346,8 @@ class Play:
 
         # Add one to the number of rounds played and retrieve
         # the number of rounds won...
-        questions_played = self.questions_played.get()
-        questions_played += 1
-        self.questions_played.set(questions_played)
+        #  = self.questions_played.get() + 1
+        # self.questions_played.set(questions_played)
 
         rounds_won = self.rounds_won.get()
 
@@ -402,14 +402,14 @@ class Play:
         self.stats_button.config(state=NORMAL)
 
         # check to see if game is over
-        # questions_played = self.questions_played.get()
+        rounds_played = self.rounds_played.get()
         questions_wanted = self.questions_wanted.get()
 
-        if questions_played == questions_wanted:
+        if rounds_played == questions_wanted:
             # work out success rate
-            success_rate = rounds_won / questions_played * 100
+            success_rate = rounds_won / rounds_played * 100
             success_string = (f"Success Rate: "
-                              f"{rounds_won} / {questions_played} "
+                              f"{rounds_won} / {rounds_played} "
                               f"({success_rate:.0f}%)")
 
             self.results_label.config(text=success_string)
@@ -508,7 +508,10 @@ class DisplayHints:
         # put hint button back to normal
         partner.hint_button.config(state=NORMAL)
         partner.end_game_button.config(state=NORMAL)
+
+        # only enable stats button if we have
         # played at least one round
+        print("rounds played...", self.rounds_played)
         if self.rounds_played >= 1:
             partner.stats_button.config(state=NORMAL)
 
@@ -535,9 +538,6 @@ class DisplayStats:
         user_scores.sort()
 
         self.stats_box = Toplevel()
-
-        # disable stats button
-        # partner.stats_button.config(state=DISABLED)
 
         # if users press the cross at the top, closes stats and
         # 'releases' stats button
@@ -573,7 +573,7 @@ class DisplayStats:
             comment_colour = "#D5E8D4"
         elif total_score == 0:
             comment_string = "Oops - You got all the question\n " \
-                             "wrong Try using the hints!"
+                             "wrong Look at the help instructions!"
             comment_colour = "#F8CECC"
             best_score_string = f"Best score: n/a"
         else:
