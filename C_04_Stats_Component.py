@@ -2,34 +2,36 @@ from tkinter import *
 from functools import partial  # to prevent unwanted windows
 
 
+# classes start here
 class StartGame:
     """
-    Initial Game interface (asks users how many rounds they
-    would like to play)
+    Initial Quiz interface (asks users how many question
+    they would like to play)
     """
 
     def __init__(self):
         """
-        Get number of rounds from user
+        Gets number of rounds from user
         """
 
         self.start_frame = Frame(padx=10, pady=10)
         self.start_frame.grid()
+        self.start_frame.configure(bg="#EDE8D0")
 
         # Create play button...
         self.play_button = Button(self.start_frame, font=("Arial", "16", "bold"),
-                                  fg="#FFFFFF", bg="#0057D8", text="Play", width=10,
-                                  command=self.check_rounds)
-        self.play_button.grid(row=0, column=1, padx=20, pady=20)
+                                  fg="#333333", bg="#D0CEE2", text="Play", width=10,
+                                  command=self.check_questions)
+        self.play_button.grid(row=0, column=1)
 
-    def check_rounds(self):
+    def check_questions(self):
         """
-        Checks users have entered 1 or more rounds
+        Checks users have entered 1 or more questions for quiz
         """
 
-        # Retrieve temperature to be converted
-        rounds_wanted = 5
-        self.to_play(rounds_wanted)
+        Play(10)
+        # Hide root window (ie: hide rounds choice window).
+        root.withdraw()
 
     def to_play(self, num_rounds):
         """
@@ -51,19 +53,19 @@ class Play:
         # Lists for stats component
 
         # Highest Score Test Data
-        # self.all_scores_list = [20,20,20, 16, 19]
-        # self.all_high_score_list = [20, 20,20,16,19]
-        # self.rounds_won.set(5)
+        self.all_scores_list = [1, 1, 1, 1, 1]
+        self.all_high_score_list = [1, 1, 1, 1, 1]
+        self.rounds_won.set(5)
 
         # Lowest Score Test Data
-        # self.all_scores_list = [0,0,0,0,0]
-        # self.all_high_score_list = [20, 20,20,16,19]
+        # self.all_scores_list = [0, 0, 0, 0, 0]
+        # self.all_high_score_list = [1, 1, 1, 1, 1]
         # self.rounds_won.set(0)
 
         # Random Score Test Data...
-        self.all_scores_list = [0, 15, 16, 0, 16]
-        self.all_high_score_list = [20, 19, 18, 20, 20]
-        self.rounds_won.set(3)
+        # self.all_scores_list = [1, 0, 1, 1, 0]
+        # self.all_high_score_list = [1, 1, 1, 1, 1]
+        # self.rounds_won.set(3)
 
         self.play_box = Toplevel()
 
@@ -76,7 +78,7 @@ class Play:
 
         self.stats_button = Button(self.game_frame, font=("Arial", "14", "bold"),
                                    text="Stats", width=15, fg="#FFFFFF",
-                                   bg="#FF8000", padx=10, pady=10, command=self.to_stats)
+                                   bg="#6A6868", padx=10, pady=10, command=self.to_stats)
         self.stats_button.grid(row=1)
 
     def to_stats(self):
@@ -134,18 +136,18 @@ class DisplayStats:
         success_string = f"Success Rate: {rounds_won} / {rounds_played}" \
                          f" ({success_rate:.0f}%)"
         total_score_string = f"Total Score: {total_score}"
-        max_possible_string = f"Maximum Possible Score: {max_possible}"
+        max_possible_string = f"Maximum Score: {max_possible}"
         best_score_string = f"Best Score: {best_score}"
         average_score_string = f"Average Score: {average_score:.1f}"
 
         # custom comment text and formatting
         if total_score == max_possible:
-            comment_string = "Amazing! You got the " \
+            comment_string = "Amazing! You got the \n" \
                              "highest possible score!"
             comment_colour = "#D5E8D4"
         elif total_score == 0:
-            comment_string = "Oops - You lost every round! " \
-                             "Try using the hints!"
+            comment_string = "Oops - You got all the question\n " \
+                             "wrong Try using the hints!"
             comment_colour = "#F8CECC"
             best_score_string = f"Best score: n/a"
         else:
