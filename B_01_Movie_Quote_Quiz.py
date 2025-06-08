@@ -218,7 +218,7 @@ class Play:
         play_labels_ref = []
         for item in play_labels_list:
             self.make_label = Label(self.quiz_frame, text=item[0], font=item[1],
-                                    bg="#EDE8D0", wraplength=300, justify="left")
+                                    bg=background, wraplength=300, justify="left")
             self.make_label.grid(row=item[3], pady=10, padx=10)
 
             play_labels_ref.append(self.make_label)
@@ -252,7 +252,7 @@ class Play:
         control_button_list = [
             [self.quiz_frame, "Next Question", "#D0CEE2", self.new_question, 24, 5, None],
             [self.hints_stats_frame, "Help", "#FF8000", self.to_hints, 11, 0, 0],
-            [self.hints_stats_frame, "Stats ", "#6A6868", self.to_stats, 11, 0, 1],
+            [self.hints_stats_frame, "Stats ", "#808080", self.to_stats, 11, 0, 1],
             [self.quiz_frame, "End", "#990000", self.close_play, 24, 7, None],
         ]
 
@@ -283,6 +283,7 @@ class Play:
         Choose four movies, works our median for score to beat. Configures
         buttons with chosen movies
         """
+        background = "#EDE8D0"
 
         # retrieve number of rounds played, add one to it and configure heading
         questions_played = self.questions_played.get()
@@ -310,8 +311,8 @@ class Play:
         for count, button in enumerate(self.movie_button_ref):
             button.config(text=movie_names[count], state=NORMAL, pady=10, padx=10, bg="#FDFFD6")
 
-        self.heading_label.config(text=f"Question {questions_played + 1} of {questions_wanted}")
-        self.results_label.config(text=f"{'=' * 7}", bg="#EDE8D0")
+        self.heading_label.config(text=f"Question {questions_played + 1} of {questions_wanted}", font=("Arial", "18", "bold"))
+        self.results_label.config(text=f"{'=' * 7}", bg=background)
 
         self.next_button.config(state=DISABLED)
 
@@ -359,7 +360,7 @@ class Play:
         # Check if the selected movie matches the correct one
         if movie_name == self.correct_movie:
             if self.correct_score >= target:
-                result_text = f"Success! {movie_name} earned you {self.correct_score} points"
+                result_text = f"Success! {movie_name} earned you {self.correct_score} point"
                 result_bg = "#D5E8D4"
                 self.all_scores_list.append(self.correct_score)
 
@@ -565,8 +566,9 @@ class DisplayStats:
                              "highest possible score!"
             comment_colour = "#D5E8D4"
         elif total_score == 0:
-            comment_string = "Oops - You got all the question\n " \
-                             "wrong Look at the help instructions!"
+            comment_string = "Oops - You got all the \n " \
+                             "questions wrong Look at \n "\
+                              "the help instructions!"
             comment_colour = "#F8CECC"
             best_score_string = f"Best score: n/a"
         else:
@@ -617,5 +619,6 @@ class DisplayStats:
 if __name__ == "__main__":
     root = Tk()
     root.title("Movie Quote Quiz")
+
     StartGame()
     root.mainloop()
