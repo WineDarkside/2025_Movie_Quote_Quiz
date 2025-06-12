@@ -407,8 +407,10 @@ class Play:
                               f"{rounds_won} / {questions_played} "
                               f"({success_rate:.0f}%)")
 
+            # Configure 'end game' labels / buttons
+            self.heading_label.config(text="End of Quiz")
             self.results_label.config(text=success_string)
-            self.next_button.config(state=DISABLED, text="Game over")
+            self.next_button.config(state=DISABLED, text="End of Quiz")
             self.end_game_button.config(text="Play Again", bg="#006600")
 
         for item in self.movie_button_ref:
@@ -461,7 +463,7 @@ class DisplayHints:
         self.hint_frame.grid()
 
         self.hint_heading_label = Label(self.hint_frame,
-                                        text="Hints",
+                                        text="Help",
                                         font=("Arial", 24, "bold"))
         self.hint_heading_label.grid(row=0)
 
@@ -560,20 +562,27 @@ class DisplayStats:
         best_score_string = f"Best Score: {best_score}"
         average_score_string = f"Average Score: {average_score:.1f}"
 
-        # custom comment text and formatting
-        if total_score == max_possible:
-            comment_string = "Amazing! You got the \n" \
-                             "highest possible score!"
-            comment_colour = "#D5E8D4"
-        elif total_score == 0:
-            comment_string = "Oops - You got all the \n " \
-                             "questions wrong Look at \n "\
-                              "the help instructions!"
-            comment_colour = "#F8CECC"
-            best_score_string = f"Best score: n/a"
+        # Check if game is complete
+        game_complete = (questions_played == partner.questions_wanted.get())
+
+        if game_complete:
+            # custom comment text and formatting
+            if total_score == max_possible:
+                comment_string = "Amazing! You got the \n" \
+                                 "highest possible score!"
+                comment_colour = "#D5E8D4"
+            elif total_score == 0:
+                comment_string = "Oops - You got all the question\n " \
+                                 "wrong Try using the Help!"
+                comment_colour = "#F8CECC"
+                best_score_string = f"Best score: n/a"
+            else:
+                comment_string = ""
+                comment_colour = "#F0F0F0"
+
         else:
-            comment_string = ""
-            comment_colour = "#F0F0F0"
+            comment_string = "Quiz in progress...\nMore questions to come!"
+            comment_colour = "#FFF2CC"
 
         heading_font = ("Arial", "16", "bold")
         normal_font = ("Arial", "14")
