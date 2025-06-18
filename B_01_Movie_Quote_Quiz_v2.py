@@ -156,8 +156,6 @@ class Play:
         background = "#EDE8D0"
 
         # Integers / String Variables
-        self.target_score = IntVar()
-
         self.questions_played = IntVar()
         self.questions_played.set(0)
 
@@ -169,7 +167,6 @@ class Play:
         # quote list and score list
         self.question_quotes_list = []
         self.all_scores_list = []
-        self.all_medians_list = []
 
         self.play_box = Toplevel()
 
